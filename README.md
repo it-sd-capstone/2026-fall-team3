@@ -20,8 +20,9 @@ ShelfSpace is a proposed website for keeping track of personal media collections
 
 ## Usage
 
-- Start the website locally with `npm start`, then open `http://localhost:3000`.
-- The homepage shows the ShelfSpace skeleton. `/health` tests Express. `/health/db` attempts a real database query.
-- **Live website URL:** Replace this sentence with the actual public Railway domain after deployment.
-- For Railway, connect the assigned GitHub repository as a web service, add a MySQL service, and define `DATABASE_URL` in the web service using a Railway variable reference to the database service's `MYSQL_URL`. Generate a public domain for the web service under Networking.
-- This is version `v0.0.0`, a technology-validation skeleton, **not** a completed Media Library website.
+- Run npm install to install the project's dependencies.
+- Run npm start to start the ShelfSpace website locally.
+- Open http://localhost:3000 in a browser to access the local website.
+- The deployed website is available at https://2026-fall-team3-production-4e2c.up.railway.app/.
+- ShelfSpace currently provides a basic homepage and health checks for the Express server and MySQL database.
+- Future updates will allow users to add, edit, delete, search, and organize games, movies, TV shows, and books.
