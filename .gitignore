@@ -1,0 +1,18 @@
+# Dependency folders and generated output
+ShelfSpace_Stack_Starter/
+node_modules/
+coverage/
+dist/
+logs/
+*.log
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+
+# IDE and system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
