@@ -6,7 +6,7 @@
   "description": "Media Library website technology stack validation",
   "main": "server.js",
   "scripts": {
-    "start": "node db/init.js && node server.js",
+    "start": "node server.js",
     "test": "node --test",
     "test:web": "node --test test/web.test.js",
     "test:db": "node --test test/database.test.js"
