@@ -1,28 +1,427 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ShelfSpace • Media Library</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShelfSpace | Media Library</title>
+
   <style>
-    body { max-width: 720px; margin: 4rem auto; padding: 0 1.5rem;
-           font: 18px/1.55 system-ui, sans-serif; color: #222; }
-    h1 { font-size: 2.5rem; margin-bottom: .25rem; }
-    small { color: #666; }
-    .note { margin-top: 2rem; background: #f4f4f4; border-radius: 8px;
-            padding: 1rem 1.25rem; }
-    a { color: #2450af; }
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f2f5fa;
+      color: #202b3d;
+      line-height: 1.5;
+    }
+
+    header {
+      background: #172c4b;
+      color: white;
+      padding: 35px 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 36px;
+    }
+
+    header p {
+      margin-bottom: 0;
+      color: #d4e0f2;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    .filters {
+      background: white;
+      padding: 22px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px #00000012;
+      margin-bottom: 25px;
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(
+        auto-fit, minmax(180px, 1fr)
+      );
+      gap: 15px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 11px;
+      font-size: 15px;
+      border: 1px solid #bac5d5;
+      border-radius: 7px;
+    }
+
+    button {
+      cursor: pointer;
+      background: #2458a5;
+      color: white;
+      border: none;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #173d78;
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+      outline: 3px solid #71a9ff;
+      outline-offset: 2px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .secondary {
+      background: #e4eaf2;
+      color: #253e5d;
+    }
+
+    .secondary:hover {
+      background: #ced9e8;
+    }
+
+    .library-grid {
+      display: grid;
+      grid-template-columns: repeat(
+        auto-fit, minmax(260px, 1fr)
+      );
+      gap: 20px;
+    }
+
+    .media-card {
+      background: white;
+      padding: 22px;
+      border-radius: 12px;
+      border: 1px solid #dce4ef;
+      box-shadow: 0 3px 12px #0000000a;
+    }
+
+    .media-card h3 {
+      margin: 12px 0;
+      font-size: 21px;
+    }
+
+    .category {
+      display: inline-block;
+      background: #e4edfc;
+      color: #214d91;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .detail {
+      margin: 7px 0;
+      font-size: 14px;
+    }
+
+    .status {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid #e5eaf1;
+      font-weight: bold;
+    }
+
+    .notes {
+      color: #586579;
+      font-style: italic;
+    }
+
+    #result-count {
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+
+    .message {
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #586579;
+    }
+
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 28px;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      main {
+        padding: 0 12px;
+      }
+    }
   </style>
 </head>
+
 <body>
-  <h1>ShelfSpace</h1>
-  <p>A personal library for games, movies, TV shows, and books.</p>
-  <small>Technology stack validation • skeleton release v0.0.0</small>
-  <div class="note">
-    <p>The Node.js / Express website is running. Media management features
-    will be added in a later development phase.</p>
-    <p><a href="/health">Web health check</a> ·
-       <a href="/health/db">Database health check</a></p>
-  </div>
+  <header>
+    <h1>ShelfSpace</h1>
+    <p>Your shared media library</p>
+  </header>
+
+  <main>
+    <section class="filters">
+      <h2>Browse the Library</h2>
+
+      <form id="filter-form">
+        <div class="filter-grid">
+
+          <div>
+            <label for="search">Search by Title</label>
+            <input
+              id="search"
+              name="search"
+              type="search"
+              placeholder="Search media..."
+            >
+          </div>
+
+          <div>
+            <label for="category">Category</label>
+            <select id="category" name="category">
+              <option value="">All Categories</option>
+              <option value="Games">Games</option>
+              <option value="Movies">Movies</option>
+              <option value="TV Shows">TV Shows</option>
+              <option value="Books">Books</option>
+              <option value="Music Albums">
+                Music Albums
+              </option>
+            </select>
+          </div>
+
+          <div>
+            <label for="status">Progress Status</label>
+            <select id="status" name="status">
+              <option value="">All Statuses</option>
+              <option value="Planned">Planned</option>
+              <option value="In Progress">
+                In Progress
+              </option>
+              <option value="Completed">Completed</option>
+              <option value="On Hold">On Hold</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="sort">Sort By</label>
+            <select id="sort" name="sort">
+              <option value="title">Title</option>
+              <option value="year">Release Year</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="order">Order</label>
+            <select id="order" name="order">
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </div>
+
+        </div>
+
+        <div class="actions">
+          <button type="submit">Search Library</button>
+          <button
+            type="button"
+            class="secondary"
+            id="reset-button"
+          >
+            Clear Filters
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <section aria-label="Media library results">
+      <h2>Media Collection</h2>
+
+      <p id="result-count" role="status" aria-live="polite">
+        Loading media...
+      </p>
+
+      <div id="library" class="library-grid"></div>
+    </section>
+  </main>
+
+  <footer>
+    ShelfSpace v0.1.0 | Media Library Project
+  </footer>
+
+  <script>
+    const form = document.getElementById('filter-form');
+    const library = document.getElementById('library');
+    const resultCount =
+      document.getElementById('result-count');
+
+    function addDetail(card, label, value) {
+      if (value === null ||
+          value === undefined ||
+          value === '') {
+        return;
+      }
+
+      const paragraph = document.createElement('p');
+      paragraph.className = 'detail';
+
+      const title = document.createElement('strong');
+      title.textContent = label + ': ';
+
+      paragraph.append(
+        title,
+        document.createTextNode(String(value))
+      );
+
+      card.appendChild(paragraph);
+    }
+
+    function createMediaCard(item) {
+      const card = document.createElement('article');
+      card.className = 'media-card';
+
+      const category = document.createElement('span');
+      category.className = 'category';
+      category.textContent = item.category;
+
+      const title = document.createElement('h3');
+      title.textContent = item.title;
+
+      card.append(category, title);
+
+      addDetail(card, 'Creator', item.creator);
+      addDetail(card, 'Release Year', item.release_year);
+      addDetail(card, 'Platform', item.platform);
+
+      if (item.rating !== null) {
+        addDetail(card, 'Rating', item.rating + '/10');
+      }
+
+      if (item.notes) {
+        const notes = document.createElement('p');
+        notes.className = 'detail notes';
+        notes.textContent = item.notes;
+        card.appendChild(notes);
+      }
+
+      const status = document.createElement('p');
+      status.className = 'status';
+      status.textContent =
+        'Status: ' + item.progress_status;
+
+      card.appendChild(status);
+
+      return card;
+    }
+
+    async function loadMedia() {
+      resultCount.textContent = 'Loading media...';
+      library.replaceChildren();
+
+      const params = new URLSearchParams(
+        new FormData(form)
+      );
+
+      try {
+        const response = await fetch(
+          '/api/media?' + params.toString()
+        );
+
+        if (!response.ok) {
+          throw new Error('Media request failed.');
+        }
+
+        const media = await response.json();
+
+        if (!Array.isArray(media)) {
+          throw new Error('Unexpected server response.');
+        }
+
+        resultCount.textContent =
+          media.length + ' media item(s) found';
+
+        if (media.length === 0) {
+          const message = document.createElement('p');
+          message.className = 'message';
+          message.textContent =
+            'No media found. Try different filters.';
+
+          library.appendChild(message);
+          return;
+        }
+
+        for (const item of media) {
+          library.appendChild(createMediaCard(item));
+        }
+
+      } catch (error) {
+        console.error('Failed to load media:', error);
+
+        resultCount.textContent =
+          'Unable to load the library.';
+
+        const message = document.createElement('p');
+        message.className = 'message';
+        message.textContent =
+          'Please try again or check the server.';
+
+        library.appendChild(message);
+      }
+    }
+
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      loadMedia();
+    });
+
+    document.getElementById('reset-button')
+      .addEventListener('click', () => {
+        form.reset();
+        loadMedia();
+      });
+
+    for (const id of [
+      'category', 'status', 'sort', 'order'
+    ]) {
+      document.getElementById(id)
+        .addEventListener('change', loadMedia);
+    }
+
+    loadMedia();
+  </script>
 </body>
 </html>
