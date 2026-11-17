@@ -1,3 +1,4 @@
+
 {
   "name": "shelfspace-stack-check",
   "version": "0.0.0",
@@ -5,7 +6,7 @@
   "description": "Media Library website technology stack validation",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node db/init.js && node server.js",
     "test": "node --test",
     "test:web": "node --test test/web.test.js",
     "test:db": "node --test test/database.test.js"
