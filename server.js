@@ -8,6 +8,12 @@ const { checkDatabase } = require('./database');
 const { getMedia } = require('./services/mediaService');
 
 const {
+  createMedia,
+  updateMedia,
+  deleteMedia
+} = require('./services/mediaManagementService');
+
+const {
   isAuthConfigured,
   verifyPassword,
   makeLoginCookie,
@@ -21,7 +27,7 @@ const app = express();
 app.use(express.json({ limit: '16kb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Reject cross-site requests that change data.
+// Reject requests from other websites.
 function requireSameOrigin(req, res, next) {
   const origin = req.get('origin');
   const fetchSite = req.get('sec-fetch-site');
@@ -49,7 +55,7 @@ function requireSameOrigin(req, res, next) {
   next();
 }
 
-// Basic login attempt limit.
+// Limit failed administrator login attempts.
 const loginAttempts = new Map();
 const MAX_ATTEMPTS = 5;
 const WINDOW_MS = 15 * 60 * 1000;
@@ -83,7 +89,22 @@ function clearLoginAttempts(req) {
   loginAttempts.delete(key);
 }
 
-// Existing website health check.
+// Handle validation, missing records and database errors.
+function handleMediaError(error, res) {
+  if (error.status === 400 || error.status === 404) {
+    return res.status(error.status).json({
+      error: error.message
+    });
+  }
+
+  console.error('Media operation failed:', error.message);
+
+  return res.status(503).json({
+    error: 'Unable to complete the media operation.'
+  });
+}
+
+// Website health check.
 app.get('/health', (_req, res) => {
   res.json({
     status: 'ok',
@@ -91,7 +112,7 @@ app.get('/health', (_req, res) => {
   });
 });
 
-// Existing MySQL connection check.
+// Database health check.
 app.get('/health/db', async (_req, res) => {
   try {
     await checkDatabase();
@@ -112,7 +133,7 @@ app.get('/health/db', async (_req, res) => {
   }
 });
 
-// Existing public media library API.
+// Public library browsing.
 app.get('/api/media', async (req, res) => {
   try {
     const media = await getMedia({
@@ -136,7 +157,7 @@ app.get('/api/media', async (req, res) => {
   }
 });
 
-// Check whether administrator login is configured.
+// Administrator authentication status.
 app.get('/api/admin/status', (req, res) => {
   res.json({
     configured: isAuthConfigured(),
@@ -196,8 +217,7 @@ app.post(
   }
 );
 
-// Protected test endpoint.
-// Visitors without a valid session cannot access it.
+// Verify administrator session.
 app.get(
   '/api/admin/check',
   requireAdmin,
@@ -206,6 +226,58 @@ app.get(
       authorized: true,
       message: 'Administrator access confirmed.'
     });
+  }
+);
+
+// ADD a media record.
+// Only authenticated administrators may use this route.
+app.post(
+  '/api/media',
+  requireAdmin,
+  requireSameOrigin,
+  async (req, res) => {
+    try {
+      const result = await createMedia(req.body);
+
+      res.status(201).json(result);
+    } catch (error) {
+      handleMediaError(error, res);
+    }
+  }
+);
+
+// EDIT a media record.
+app.put(
+  '/api/media/:id',
+  requireAdmin,
+  requireSameOrigin,
+  async (req, res) => {
+    try {
+      const result = await updateMedia(
+        req.params.id,
+        req.body
+      );
+
+      res.json(result);
+    } catch (error) {
+      handleMediaError(error, res);
+    }
+  }
+);
+
+// DELETE a media record.
+app.delete(
+  '/api/media/:id',
+  requireAdmin,
+  requireSameOrigin,
+  async (req, res) => {
+    try {
+      const result = await deleteMedia(req.params.id);
+
+      res.json(result);
+    } catch (error) {
+      handleMediaError(error, res);
+    }
   }
 );
 
