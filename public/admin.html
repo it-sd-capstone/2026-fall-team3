@@ -5,75 +5,82 @@
   <meta charset="UTF-8">
   <meta name="viewport"
         content="width=device-width, initial-scale=1.0">
-
-  <title>ShelfSpace | Administrator Login</title>
+  <title>ShelfSpace | Administrator</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: #f2f5fa;
       color: #202b3d;
+      line-height: 1.5;
     }
 
     header {
       background: #172c4b;
       color: white;
-      padding: 30px 20px;
       text-align: center;
+      padding: 28px 16px;
     }
 
-    header h1 {
-      margin: 0;
-    }
+    header h1 { margin: 0; }
 
     main {
-      max-width: 440px;
-      margin: 50px auto;
-      padding: 0 20px;
+      max-width: 1050px;
+      margin: 30px auto;
+      padding: 0 16px;
     }
 
     .panel {
       background: white;
-      padding: 30px;
+      padding: 24px;
+      margin-bottom: 24px;
       border-radius: 12px;
-      box-shadow: 0 3px 15px #00000015;
+      box-shadow: 0 3px 12px #00000012;
+    }
+
+    .login-panel {
+      max-width: 450px;
+      margin: 40px auto;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns:
+        repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
     }
 
     label {
       display: block;
       font-weight: bold;
-      margin-bottom: 8px;
+      margin-bottom: 5px;
     }
 
-    input {
+    input, select, textarea {
       width: 100%;
-      padding: 12px;
+      padding: 11px;
       border: 1px solid #bac5d5;
       border-radius: 7px;
-      font-size: 16px;
-      margin-bottom: 18px;
+      font: inherit;
     }
 
+    textarea { min-height: 90px; }
+
     button {
-      width: 100%;
-      padding: 12px;
+      padding: 11px 18px;
       border: none;
       border-radius: 7px;
       background: #2458a5;
       color: white;
-      font-size: 16px;
+      font: inherit;
+      font-weight: bold;
       cursor: pointer;
-      margin-bottom: 12px;
     }
 
-    button:hover {
-      background: #173d78;
-    }
+    button:hover { background: #173d78; }
 
     button:disabled {
       opacity: 0.6;
@@ -82,35 +89,76 @@
 
     button:focus-visible,
     input:focus-visible,
-    a:focus-visible {
+    select:focus-visible,
+    textarea:focus-visible {
       outline: 3px solid #71a9ff;
-      outline-offset: 3px;
+      outline-offset: 2px;
     }
 
-    .message {
-      min-height: 24px;
-      margin: 15px 0;
+    .secondary {
+      background: #e4eaf2;
+      color: #253e5d;
     }
 
-    .error {
-      color: #a21d1d;
+    .secondary:hover { background: #ced9e8; }
+
+    .danger { background: #ae3030; }
+    .danger:hover { background: #872424; }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
     }
 
-    .success {
-      color: #166534;
+    .item-grid {
+      display: grid;
+      grid-template-columns:
+        repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
     }
 
-    a {
+    .media-card {
+      border: 1px solid #dce4ef;
+      border-radius: 10px;
+      padding: 18px;
+      background: white;
+    }
+
+    .media-card h3 { margin: 8px 0; }
+
+    .media-card p {
+      margin: 6px 0;
+      overflow-wrap: anywhere;
+    }
+
+    .category {
       color: #2458a5;
+      font-weight: bold;
     }
 
-    .back {
+    .message { min-height: 24px; }
+    .error { color: #a21d1d; }
+    .success { color: #166534; }
+
+    .top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .full-width { margin-top: 16px; }
+
+    a { color: #2458a5; }
+    [hidden] { display: none !important; }
+
+    footer {
       text-align: center;
-      margin-top: 20px;
-    }
-
-    [hidden] {
-      display: none !important;
+      padding: 25px;
+      color: #586579;
     }
   </style>
 </head>
@@ -118,171 +166,540 @@
 <body>
   <header>
     <h1>ShelfSpace</h1>
-    <p>Administrator Access</p>
+    <p>Administrator Media Management</p>
   </header>
 
   <main>
-    <section class="panel">
+    <!-- Administrator login -->
+    <section id="login-panel"
+             class="panel login-panel">
       <h2>Administrator Login</h2>
 
       <form id="login-form">
-        <label for="password">
-          Administrator Password
-        </label>
+        <label for="password">Password</label>
 
         <input
-          type="password"
           id="password"
-          name="password"
+          type="password"
           autocomplete="current-password"
           required
         >
 
-        <button type="submit" id="login-button">
-          Log In
-        </button>
+        <div class="actions">
+          <button id="login-button" type="submit">
+            Log In
+          </button>
+        </div>
       </form>
-
-      <section id="admin-panel" hidden>
-        <h3>Administrator Access Confirmed</h3>
-
-        <p>
-          You are signed in as the ShelfSpace
-          administrator.
-        </p>
-
-        <p>
-          Media management features will be added
-          in the next development steps.
-        </p>
-
-        <button type="button" id="logout-button">
-          Log Out
-        </button>
-      </section>
-
-      <p
-        id="message"
-        class="message"
-        role="status"
-        aria-live="polite"
-      ></p>
     </section>
 
-    <p class="back">
-      <a href="/">Return to Media Library</a>
+    <p id="auth-message"
+       class="message"
+       role="status"
+       aria-live="polite"></p>
+
+    <!-- Administrator dashboard -->
+    <div id="admin-panel" hidden>
+
+      <section class="panel">
+        <div class="top-row">
+          <div>
+            <h2>Administrator Dashboard</h2>
+            <p>You are signed in.</p>
+          </div>
+
+          <button id="logout-button"
+                  class="secondary"
+                  type="button">
+            Log Out
+          </button>
+        </div>
+      </section>
+
+      <!-- Add and edit media -->
+      <section class="panel">
+        <h2 id="form-title">Add Media</h2>
+
+        <form id="media-form">
+          <div class="grid">
+            <div>
+              <label for="title">Title *</label>
+              <input id="title"
+                     name="title"
+                     maxlength="200"
+                     required>
+            </div>
+
+            <div>
+              <label for="category">Category *</label>
+              <select id="category"
+                      name="category"
+                      required>
+                <option value="Games">Games</option>
+                <option value="Movies">Movies</option>
+                <option value="TV Shows">
+                  TV Shows
+                </option>
+                <option value="Books">Books</option>
+                <option value="Music Albums">
+                  Music Albums
+                </option>
+              </select>
+            </div>
+
+            <div>
+              <label for="creator">Creator *</label>
+              <input id="creator"
+                     name="creator"
+                     maxlength="150"
+                     required>
+            </div>
+
+            <div>
+              <label for="release_year">
+                Release Year *
+              </label>
+              <input id="release_year"
+                     name="release_year"
+                     type="number"
+                     min="1800"
+                     max="2100"
+                     required>
+            </div>
+
+            <div>
+              <label for="progress_status">
+                Progress Status
+              </label>
+              <select id="progress_status"
+                      name="progress_status">
+                <option value="Planned">Planned</option>
+                <option value="In Progress">
+                  In Progress
+                </option>
+                <option value="Completed">
+                  Completed
+                </option>
+                <option value="On Hold">On Hold</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="platform">
+                Platform (Optional)
+              </label>
+              <input id="platform"
+                     name="platform"
+                     maxlength="80">
+            </div>
+
+            <div>
+              <label for="rating">
+                Rating (1-10, Optional)
+              </label>
+              <input id="rating"
+                     name="rating"
+                     type="number"
+                     min="1"
+                     max="10">
+            </div>
+          </div>
+
+          <div class="full-width">
+            <label for="notes">Notes (Optional)</label>
+            <textarea id="notes"
+                      name="notes"
+                      maxlength="5000"></textarea>
+          </div>
+
+          <div class="actions">
+            <button id="save-button" type="submit">
+              Add Media
+            </button>
+
+            <button id="cancel-button"
+                    class="secondary"
+                    type="button"
+                    hidden>
+              Cancel Editing
+            </button>
+          </div>
+        </form>
+
+        <p id="media-message"
+           class="message"
+           role="status"
+           aria-live="polite"></p>
+      </section>
+
+      <!-- Existing media -->
+      <section class="panel">
+        <div class="top-row">
+          <h2>Manage Media Records</h2>
+
+          <button id="refresh-button"
+                  type="button"
+                  class="secondary">
+            Refresh
+          </button>
+        </div>
+
+        <p id="record-count"
+           role="status"
+           aria-live="polite">
+          Loading records...
+        </p>
+
+        <div id="media-list"
+             class="item-grid"></div>
+      </section>
+    </div>
+
+    <p>
+      <a href="/">Return to Public Library</a>
     </p>
   </main>
 
-  <script>
-    const form = document.getElementById('login-form');
-    const panel = document.getElementById('admin-panel');
-    const message = document.getElementById('message');
-    const passwordInput = document.getElementById('password');
-    const loginButton = document.getElementById('login-button');
-    const logoutButton = document.getElementById('logout-button');
+  <footer>ShelfSpace v0.2.0 Development</footer>
 
-    function showMessage(text, isError = false) {
-      message.textContent = text;
-      message.className = isError
-        ? 'message error'
-        : 'message success';
+  <script>
+    const loginPanel =
+      document.getElementById('login-panel');
+    const adminPanel =
+      document.getElementById('admin-panel');
+    const loginForm =
+      document.getElementById('login-form');
+    const mediaForm =
+      document.getElementById('media-form');
+    const mediaList =
+      document.getElementById('media-list');
+
+    const authMessage =
+      document.getElementById('auth-message');
+    const mediaMessage =
+      document.getElementById('media-message');
+    const recordCount =
+      document.getElementById('record-count');
+
+    let editingId = null;
+
+    function showMessage(element, text, error = false) {
+      element.textContent = text;
+      element.className =
+        error ? 'message error' : 'message success';
     }
 
-    function updateView(authenticated) {
-      form.hidden = authenticated;
-      panel.hidden = !authenticated;
+    function showAdmin(authenticated) {
+      loginPanel.hidden = authenticated;
+      adminPanel.hidden = !authenticated;
+      loginForm.reset();
 
-      passwordInput.value = '';
+      if (!authenticated) {
+        resetMediaForm();
+        mediaList.replaceChildren();
+        recordCount.textContent = '';
+      }
+    }
+
+    async function request(url, options = {}) {
+      const response = await fetch(url, {
+        credentials: 'same-origin',
+        cache: 'no-store',
+        ...options
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          showAdmin(false);
+          throw new Error(
+            'Administrator session expired. Log in again.'
+          );
+        }
+
+        throw new Error(
+          data.error || 'The request could not be completed.'
+        );
+      }
+
+      return data;
+    }
+
+    function resetMediaForm() {
+      editingId = null;
+      mediaForm.reset();
+
+      document.getElementById('form-title')
+        .textContent = 'Add Media';
+
+      document.getElementById('save-button')
+        .textContent = 'Add Media';
+
+      document.getElementById('cancel-button')
+        .hidden = true;
+    }
+
+    function field(name) {
+      return mediaForm.elements.namedItem(name);
+    }
+
+    function createMediaCard(item) {
+      const card = document.createElement('article');
+      card.className = 'media-card';
+
+      const category = document.createElement('span');
+      category.className = 'category';
+      category.textContent = item.category;
+
+      const heading = document.createElement('h3');
+      heading.textContent = item.title;
+
+      const details = document.createElement('p');
+      details.textContent =
+        `${item.creator} | ${item.release_year}`;
+
+      const status = document.createElement('p');
+      status.textContent =
+        `Status: ${item.progress_status}`;
+
+      const buttons = document.createElement('div');
+      buttons.className = 'actions';
+
+      const edit = document.createElement('button');
+      edit.type = 'button';
+      edit.textContent = 'Edit';
+      edit.addEventListener('click', () => {
+        editingId = item.id;
+
+        field('title').value = item.title;
+        field('category').value = item.category;
+        field('creator').value = item.creator;
+        field('release_year').value = item.release_year;
+        field('progress_status').value =
+          item.progress_status;
+        field('platform').value = item.platform ?? '';
+        field('rating').value = item.rating ?? '';
+        field('notes').value = item.notes ?? '';
+
+        document.getElementById('form-title')
+          .textContent = `Edit Media #${item.id}`;
+
+        document.getElementById('save-button')
+          .textContent = 'Save Changes';
+
+        document.getElementById('cancel-button')
+          .hidden = false;
+
+        showMessage(mediaMessage, 'Editing selected record.');
+
+        mediaForm.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+
+        field('title').focus({
+          preventScroll: true
+        });
+      });
+
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'danger';
+      remove.textContent = 'Delete';
+
+      remove.addEventListener('click', async () => {
+        if (!confirm(
+          `Permanently delete "${item.title}"?`
+        )) {
+          return;
+        }
+
+        remove.disabled = true;
+
+        try {
+          await request(`/api/media/${item.id}`, {
+            method: 'DELETE'
+          });
+
+          if (editingId === item.id) {
+            resetMediaForm();
+          }
+
+          await loadMedia();
+
+          showMessage(
+            mediaMessage,
+            `"${item.title}" was deleted.`
+          );
+        } catch (error) {
+          showMessage(mediaMessage, error.message, true);
+        } finally {
+          remove.disabled = false;
+        }
+      });
+
+      buttons.append(edit, remove);
+      card.append(category, heading, details, status, buttons);
+
+      return card;
+    }
+
+    async function loadMedia() {
+      recordCount.textContent = 'Loading records...';
+      mediaList.replaceChildren();
+
+      try {
+        const records = await request('/api/media');
+
+        if (!Array.isArray(records)) {
+          throw new Error('Invalid media response.');
+        }
+
+        recordCount.textContent =
+          `${records.length} media records`;
+
+        for (const item of records) {
+          mediaList.appendChild(createMediaCard(item));
+        }
+
+        if (records.length === 0) {
+          recordCount.textContent =
+            'No media records found.';
+        }
+
+        return true;
+      } catch (error) {
+        recordCount.textContent =
+          'Unable to load media records.';
+        showMessage(mediaMessage, error.message, true);
+        return false;
+      }
     }
 
     async function checkSession() {
       try {
-        const response = await fetch('/api/admin/status', {
-          cache: 'no-store',
-          credentials: 'same-origin'
-        });
-
-        if (!response.ok) {
-          throw new Error('Unable to check login status.');
-        }
-
-        const data = await response.json();
+        const data = await request('/api/admin/status');
 
         if (!data.configured) {
+          showAdmin(false);
           showMessage(
-            'Administrator credentials are not configured.',
+            authMessage,
+            'Administrator login is not configured.',
             true
           );
           return;
         }
 
-        updateView(data.authenticated);
+        showAdmin(data.authenticated);
 
         if (data.authenticated) {
-          showMessage('You are signed in.');
+          showMessage(authMessage, 'Signed in.');
+          await loadMedia();
         }
       } catch (error) {
-        showMessage(error.message, true);
+        showMessage(authMessage, error.message, true);
       }
     }
 
-    form.addEventListener('submit', async event => {
+    loginForm.addEventListener('submit', async event => {
       event.preventDefault();
 
-      loginButton.disabled = true;
-      showMessage('Signing in...');
+      const button =
+        document.getElementById('login-button');
+      button.disabled = true;
 
       try {
-        const response = await fetch('/api/admin/login', {
+        await request('/api/admin/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          credentials: 'same-origin',
           body: JSON.stringify({
-            password: passwordInput.value
+            password:
+              document.getElementById('password').value
           })
         });
 
-        const data = await response.json();
+        showAdmin(true);
+        showMessage(
+          authMessage,
+          'Administrator login successful.'
+        );
 
-        if (!response.ok) {
-          throw new Error(
-            data.error || 'Administrator login failed.'
-          );
-        }
-
-        updateView(true);
-        showMessage('Administrator login successful!');
+        await loadMedia();
       } catch (error) {
-        showMessage(error.message, true);
+        showMessage(authMessage, error.message, true);
       } finally {
-        loginButton.disabled = false;
+        button.disabled = false;
       }
     });
 
-    logoutButton.addEventListener('click', async () => {
-      logoutButton.disabled = true;
+    mediaForm.addEventListener('submit', async event => {
+      event.preventDefault();
+
+      const button =
+        document.getElementById('save-button');
+      button.disabled = true;
+
+      const record = Object.fromEntries(
+        new FormData(mediaForm).entries()
+      );
+
+      const wasEditing = editingId !== null;
 
       try {
-        const response = await fetch('/api/admin/logout', {
-          method: 'POST',
-          credentials: 'same-origin'
-        });
+        await request(
+          wasEditing
+            ? `/api/media/${editingId}`
+            : '/api/media',
+          {
+            method: wasEditing ? 'PUT' : 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(record)
+          }
+        );
 
-        if (!response.ok) {
-          throw new Error('Unable to log out.');
-        }
+        resetMediaForm();
+        await loadMedia();
 
-        updateView(false);
-        showMessage('You have logged out.');
+        showMessage(
+          mediaMessage,
+          wasEditing
+            ? 'Media record updated successfully.'
+            : 'Media record added successfully.'
+        );
       } catch (error) {
-        showMessage(error.message, true);
+        showMessage(mediaMessage, error.message, true);
       } finally {
-        logoutButton.disabled = false;
+        button.disabled = false;
       }
     });
+
+    document.getElementById('cancel-button')
+      .addEventListener('click', () => {
+        resetMediaForm();
+        showMessage(mediaMessage, 'Editing cancelled.');
+      });
+
+    document.getElementById('refresh-button')
+      .addEventListener('click', loadMedia);
+
+    document.getElementById('logout-button')
+      .addEventListener('click', async () => {
+        try {
+          await request('/api/admin/logout', {
+            method: 'POST'
+          });
+
+          showAdmin(false);
+          showMessage(authMessage, 'Logged out.');
+        } catch (error) {
+          showMessage(authMessage, error.message, true);
+        }
+      });
 
     checkSession();
   </script>
