@@ -1,13 +1,13 @@
 
 {
   "name": "shelfspace-stack-check",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "Media Library website technology stack validation",
+  "description": "ShelfSpace shared media library with administrator management",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "node --test",
+    "test": "node --test test/admin.test.js test/database.test.js test/media.test.js test/web.test.js",
     "test:web": "node --test test/web.test.js",
     "test:db": "node --test test/database.test.js"
   },
@@ -20,3 +20,4 @@
     "dotenv": "^17.4.2"
   }
 }
+
