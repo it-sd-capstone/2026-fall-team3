@@ -8,11 +8,18 @@ const app = require('../server');
 function configureTestAuth(t) {
   const previous = {
     ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
-    ADMIN_SESSION_SECRET: process.env.ADMIN_SESSION_SECRET
+    ADMIN_SESSION_SECRET: process.env.ADMIN_SESSION_SECRET,
+    DATABASE_URL: process.env.DATABASE_URL
   };
 
   process.env.ADMIN_PASSWORD = 'test-password-123456789';
   process.env.ADMIN_SESSION_SECRET = 'test-secret-'.repeat(6);
+
+  // Dummy URL for automated tests.
+  // The MySQL connection is mocked, so this
+  // does not connect to a real database.
+  process.env.DATABASE_URL =
+    'mysql://test:test@localhost/test';
 
   t.after(() => {
     for (const [name, value] of Object.entries(previous)) {
@@ -24,6 +31,7 @@ function configureTestAuth(t) {
     }
   });
 }
+
 
 // Start and stop a temporary Express server.
 async function withServer(callback) {
