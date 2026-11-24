@@ -1,0 +1,290 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>ShelfSpace | Administrator Login</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f2f5fa;
+      color: #202b3d;
+    }
+
+    header {
+      background: #172c4b;
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+    }
+
+    main {
+      max-width: 440px;
+      margin: 50px auto;
+      padding: 0 20px;
+    }
+
+    .panel {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 3px 15px #00000015;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #bac5d5;
+      border-radius: 7px;
+      font-size: 16px;
+      margin-bottom: 18px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 7px;
+      background: #2458a5;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      margin-bottom: 12px;
+    }
+
+    button:hover {
+      background: #173d78;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    a:focus-visible {
+      outline: 3px solid #71a9ff;
+      outline-offset: 3px;
+    }
+
+    .message {
+      min-height: 24px;
+      margin: 15px 0;
+    }
+
+    .error {
+      color: #a21d1d;
+    }
+
+    .success {
+      color: #166534;
+    }
+
+    a {
+      color: #2458a5;
+    }
+
+    .back {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>ShelfSpace</h1>
+    <p>Administrator Access</p>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h2>Administrator Login</h2>
+
+      <form id="login-form">
+        <label for="password">
+          Administrator Password
+        </label>
+
+        <input
+          type="password"
+          id="password"
+          name="password"
+          autocomplete="current-password"
+          required
+        >
+
+        <button type="submit" id="login-button">
+          Log In
+        </button>
+      </form>
+
+      <section id="admin-panel" hidden>
+        <h3>Administrator Access Confirmed</h3>
+
+        <p>
+          You are signed in as the ShelfSpace
+          administrator.
+        </p>
+
+        <p>
+          Media management features will be added
+          in the next development steps.
+        </p>
+
+        <button type="button" id="logout-button">
+          Log Out
+        </button>
+      </section>
+
+      <p
+        id="message"
+        class="message"
+        role="status"
+        aria-live="polite"
+      ></p>
+    </section>
+
+    <p class="back">
+      <a href="/">Return to Media Library</a>
+    </p>
+  </main>
+
+  <script>
+    const form = document.getElementById('login-form');
+    const panel = document.getElementById('admin-panel');
+    const message = document.getElementById('message');
+    const passwordInput = document.getElementById('password');
+    const loginButton = document.getElementById('login-button');
+    const logoutButton = document.getElementById('logout-button');
+
+    function showMessage(text, isError = false) {
+      message.textContent = text;
+      message.className = isError
+        ? 'message error'
+        : 'message success';
+    }
+
+    function updateView(authenticated) {
+      form.hidden = authenticated;
+      panel.hidden = !authenticated;
+
+      passwordInput.value = '';
+    }
+
+    async function checkSession() {
+      try {
+        const response = await fetch('/api/admin/status', {
+          cache: 'no-store',
+          credentials: 'same-origin'
+        });
+
+        if (!response.ok) {
+          throw new Error('Unable to check login status.');
+        }
+
+        const data = await response.json();
+
+        if (!data.configured) {
+          showMessage(
+            'Administrator credentials are not configured.',
+            true
+          );
+          return;
+        }
+
+        updateView(data.authenticated);
+
+        if (data.authenticated) {
+          showMessage('You are signed in.');
+        }
+      } catch (error) {
+        showMessage(error.message, true);
+      }
+    }
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+
+      loginButton.disabled = true;
+      showMessage('Signing in...');
+
+      try {
+        const response = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'same-origin',
+          body: JSON.stringify({
+            password: passwordInput.value
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data.error || 'Administrator login failed.'
+          );
+        }
+
+        updateView(true);
+        showMessage('Administrator login successful!');
+      } catch (error) {
+        showMessage(error.message, true);
+      } finally {
+        loginButton.disabled = false;
+      }
+    });
+
+    logoutButton.addEventListener('click', async () => {
+      logoutButton.disabled = true;
+
+      try {
+        const response = await fetch('/api/admin/logout', {
+          method: 'POST',
+          credentials: 'same-origin'
+        });
+
+        if (!response.ok) {
+          throw new Error('Unable to log out.');
+        }
+
+        updateView(false);
+        showMessage('You have logged out.');
+      } catch (error) {
+        showMessage(error.message, true);
+      } finally {
+        logoutButton.disabled = false;
+      }
+    });
+
+    checkSession();
+  </script>
+</body>
+</html>
